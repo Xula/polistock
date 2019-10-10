@@ -1,0 +1,22 @@
+<script>
+    var type = <%- type %>;
+    var typeIcon;
+    if(type == 1) {
+        typeIcon = "success";
+    }
+    else {
+        typeIcon = "error";
+    }
+    
+    Swal.fire(
+    {
+      position: 'top-end',
+      type: typeIcon,
+      title: "<%- title %>",
+      showConfirmButton: false,
+      timer: 2000,
+      onClose: () => {
+        window.location.reload();
+      }
+    });
+</script>
