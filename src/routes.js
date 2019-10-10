@@ -11,6 +11,7 @@ routes.get('/', (req, res) => {
   res.json({ message: 'API WORKING' });
 });
 
+// Database access routes
 routes.get('/materiais', MaterialController.index);
 routes.post('/materiais', MaterialController.store);
 routes.put('/materiais', MaterialController.update);
