@@ -4,11 +4,36 @@ import MaterialController from './app/controllers/MaterialController';
 import LotController from './app/controllers/LotController';
 import MovementController from './app/controllers/MovementController';
 import UserController from './app/controllers/UserController';
+import ejs from 'ejs';
+import fs from 'fs';
 
 const routes = new Router();
+const PublicPath = '/app/src/public/';
 
+// rotas para as paginas (LOGIN)
 routes.get('/', (req, res) => {
-  res.json({ message: 'API WORKING' });
+  res.render(PublicPath + 'html/Login.ejs');
+});
+
+// 
+routes.get('/ListarMateriais', (req, res) => {
+  
+  res.render('layouts/LayoutAdmin', 
+        {
+            title: 'Polistock - Materiais',
+            body: ejs.render(fs.readFileSync(PublicPath + '/html/Materiais.ejs', 'utf8'))
+        });
+  
+});
+
+routes.get('/ListarLotes', (req, res) => {
+  
+  res.render('layouts/LayoutAdmin', 
+        {
+            title: 'Polistock - Lotes',
+            body: ejs.render(fs.readFileSync(PublicPath + '/html/Lotes.ejs', 'utf8'))
+        });
+  
 });
 
 // Database access routes

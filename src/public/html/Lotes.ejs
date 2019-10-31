@@ -1,0 +1,174 @@
+<div class="container">
+    <div class="col s1">
+        <button data-target="modal_cadastrar_material" class="purple darken-1 btn modal-trigger waves-effect waves-light">
+          <i class="material-icons" id="btcadastrar">add</i>
+        </button>
+    </div>
+  
+    <!-- MODAL -->
+    <div id="modal_cadastrar_material" class="modal">
+        <div class="modal-content">
+            <h3>Cadastrar Novo Lote</h3>
+            <form>
+              <div class="row">
+                <div class="col s12">
+                  <div class="row">
+                    <div class="input-field col s12">
+                      <input type="text" id="autocomplete-input" class="autocomplete">
+                      <label for="autocomplete-input">Material</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="quantidade" min="0" type="number" class="validate" required>
+                  <label for="quantidade">Quantidade</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="validade" type="text" class="datepicker">
+                  <label for="validade">Validade</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="data_atual" type="text" required disabled>
+                </div>
+              </div>
+              <div id="DialogText"></div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="modal-close waves-effect waves-light btn purple darken-1" id="botao_cadastrar">
+                <i class="material-icons left">check</i>
+                <span>Cadastrar</span>
+            </button>
+        </div>
+      
+        <script>
+          var materiais;
+          
+          function dataAtualFormatada()
+          {
+              var data = new Date(),
+                  dia  = data.getDate().toString().padStart(2, '0'),
+                  mes  = (data.getMonth()+1).toString().padStart(2, '0'), //+1 pois no getMonth Janeiro começa com zero.
+                  ano  = data.getFullYear();
+              return dia+"/"+mes+"/"+ano;
+          }
+          
+          $("#data_atual").val("Data Atual: " + dataAtualFormatada());
+          
+          $(document).ready(function () 
+          {
+            $('select').formSelect();
+            $('.modal').modal();
+            $('.datepicker').datepicker({minDate: new Date(),
+                                         format: 'yyyy-mm-dd'});
+            
+            $.get('materiais', (data) => {
+              //console.log(data);
+              materiais = data;
+              var Codigo = {};
+              Codigo.data = {};
+              
+              //var Codigo = "{";
+              for(c = 0; c < materiais.length; c++)
+              {
+                Codigo.data[materiais[c].MATE_NAME.replace(/\"/g, "")] = null;
+              }
+              
+              $('input.autocomplete').autocomplete(
+                Codigo
+              );
+            });
+          });
+          
+          $('#botao_cadastrar').on('click', function () 
+          {
+            var Error = "";
+            
+            
+            console.log(JSON.stringify(data));
+            if(materiais.find(Mat => Mat.MATE_NAME === $("#autocomplete-input").val()))
+            {
+              var MaterialSelecionado = materiais.find(Mat => Mat.MATE_NAME === $("#autocomplete-input").val()).MATE_ID;
+              var data = {
+                MATE_ID: MaterialSelecionado,
+                LOT_QUANTITY: $("#quantidade").val(),
+                LOT_VALIDITY: $("#validade").val()
+              };
+            }
+            
+            if($("#autocomplete-input").val().length > 0)
+            {   
+              if($("#quantidade").val() > 0)
+              {
+                if($("#validade").val().length > 0)
+                {
+                  $.ajax({
+                  url: "lots",
+                  type : 'POST',
+                  data : JSON.stringify(data),
+                  contentType: 'application/json',
+                  beforeSend : function()
+                  {
+                    Swal.fire({
+                      title: 'Cadastrando...',
+                      timer: 10000,
+                      onBeforeOpen: () => 
+                      {
+                        Swal.showLoading()
+                      },
+                      onClose: () => 
+                      {
+                        clearInterval(timerInterval)
+                      }
+                    })
+                  }
+                  })
+                  .done(function(msg)
+                  {
+                    console.log('RESPOSTA DA INSERÇÃO: ', msg);
+                    $("#DialogText").html(msg);
+                  })
+                  .fail(function(jqXHR, textStatus, msg)
+                  {
+                    alert(msg);
+                  });
+                }
+                else
+                {
+                  Error = "Favor selecionar uma data de validade."
+                }
+              }
+              else
+              {
+                Error = "Quantidade invalida."
+              }
+            }
+            else
+            {
+              Error = "Favor selecionar um material."
+            }
+            
+            if(Error.length >= 1)
+            {
+              Swal.fire(
+              {
+                position: 'center',
+                type: 'error',
+                title: Error,
+                showConfirmButton: false,
+                timer: 2000,
+                onClose: () => {
+                  $("#btcadastrar").trigger('click');
+                }
+              });
+            }
+          });
+        </script>
+    </div>
+</div>

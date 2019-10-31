@@ -14,16 +14,12 @@ class Material extends Model {
           type: Sequelize.STRING,
           allowNull: false,
         },
-        MATE_PACKING: {
-          type: Sequelize.DECIMAL,
-          allowNull: false,
-        },
-        MATE_AMOUNT: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
         MATE_OBSERVATION: {
           type: Sequelize.STRING,
+          allowNull: false,
+        },
+        MATE_ACTIVE: {
+          type: Sequelize.BOOLEAN,
           allowNull: false,
         },
       },
