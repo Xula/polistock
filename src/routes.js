@@ -21,7 +21,7 @@ routes.get('/ListarMateriais', (req, res) => {
   res.render('layouts/LayoutAdmin', 
         {
             title: 'Polistock - Materiais',
-            body: ejs.render(fs.readFileSync(PublicPath + '/html/Materiais.ejs', 'utf8'))
+            body: ejs.render(fs.readFileSync(__dirname + '/public/html/Materiais.ejs', 'utf8'))
         });
   
 });
@@ -31,7 +31,7 @@ routes.get('/ListarLotes', (req, res) => {
   res.render('layouts/LayoutAdmin', 
         {
             title: 'Polistock - Lotes',
-            body: ejs.render(fs.readFileSync(PublicPath + '/html/Lotes.ejs', 'utf8'))
+            body: ejs.render(fs.readFileSync(__dirname + '/public/html/Lotes.ejs', 'utf8'))
         });
   
 });
