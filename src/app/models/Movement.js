@@ -14,11 +14,11 @@ class Movement extends Model {
           type: Sequelize.DATE,
           allowNull: false,
         },
-        // type: {
-        //   type: Sequelize.INTEGER,
-        //   field: 'MOVE_TYPE',
-        //   allowNull: false,
-        // },
+        MOVE_TYPE: {
+           type: Sequelize.INTEGER,
+           field: 'MOVE_TYPE',
+           allowNull: false,
+         },
         MOVE_QUANTITY: {
           type: Sequelize.INTEGER,
           allowNull: false,

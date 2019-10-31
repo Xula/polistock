@@ -18,6 +18,10 @@ class Lot extends Model {
           type: Sequelize.DATE,
           allowNull: false,
         },
+        LOT_ACTIVE: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+        },
       },
       {
         sequelize,
@@ -36,3 +40,5 @@ class Lot extends Model {
 }
 
 export default Lot;
+
+// adicionar campo de status vencido quando o administrador marcar como vencido

@@ -9,8 +9,8 @@
             </form>
         </div>
         <div class="col s1">
-            <button data-target="modal_cadastrar_material" class="btn modal-trigger waves-effect waves-light"><i
-                    class="material-icons">add</i></button>
+            <button data-target="modal_cadastrar_material" class="purple darken-1 btn modal-trigger waves-effect waves-light"><i
+                    class="material-icons" id="btcadastrar">add</i></button>
         </div>
     </div>
     <div class="row">
@@ -18,9 +18,7 @@
             <thead>
                 <tr>
                     <th>Material</th>
-                    <th class="center-align">Embalagem</th>
-                    <th class="center-align">Quantidade</th>
-                    <th class="center-align">Un. de Med.</th>
+                    <th class="center-align">Observações</th>
                 </tr>
             </thead>
 
@@ -40,18 +38,9 @@
                         <label for="nome_material">Nome do Produto:</label>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="input-field col s6">
-                        <input id="embalagem" type="text" class="validate">
-                        <label for="embalagem">Embalagem:</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="input-field col s6">
-                        <input id="quantidade" type="text" class="validate">
-                        <label for="quantidade">Quantidade:</label>
-                    </div>
-                </div>
+              
+                
+                <!--
                 <div class="row">
                     <div class="input-field col s4">
                         <select id="medida">
@@ -69,6 +58,7 @@
                         <label>Unidade de Medida:</label>
                     </div>
                 </div>
+                -->
                 <div class="row">
                     <div class="input-field col s12">
                         <textarea id="observacoes" class="materialize-textarea validate"></textarea>
@@ -79,73 +69,110 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button type="submit" class="modal-close waves-effect waves-light btn" id="botao_cadastrar">
+            <button type="submit" class="modal-close waves-effect waves-light btn purple darken-1" id="botao_cadastrar">
                 <i class="material-icons left">check</i>
                 <span>Cadastrar</span>
             </button>
         </div>
         <script>
-            var materiais = <%- Materiais %>;
+          var materiais;
+          $.get('materiais', (data) => {
+            console.log(data);
+            materiais = data;
             Buscando();
-            
-            function Buscando()
-            {
-              var Encontrados = materiais.filter(Material => Material.Nome.toUpperCase().includes(document.getElementById("search").value.toUpperCase()));
-              var Codigo = "";
-              for(c = 0; c < Encontrados.length; c++)
-              {
-                    Codigo += "<tr><td>" + Encontrados[c].Nome + 
-                    "</td> <td class='center-align'>" + Encontrados[c].Embalagem + 
-                    "</td> <td class='center-align'>" + Encontrados[c].Quantidade +
-                    "</td> <td class='center-align'>" + Encontrados[c].Medida + "</td></tr>"; 
-              }
-             document.getElementById("table").innerHTML = Codigo;
-            }
-            
-            $(document).ready(function () {
-                $('select').formSelect();
-                $('.modal').modal();
-            });
+          });
 
-            $('#botao_cadastrar').on('click', function () 
+          function Buscando()
+          {
+            var Encontrados = materiais.filter(Material => Material.MATE_NAME.toUpperCase().includes(document.getElementById("search").value.toUpperCase()));
+            var Codigo = "";
+            for(c = 0; c < Encontrados.length; c++)
             {
-                var data = 
+              Codigo += "<tr><td>" + Encontrados[c].MATE_NAME +
+              //"</td> <td class='center-align'>" + Encontrados[c].MATE_PACKING + 
+              //"</td> <td class='center-align'>" + Encontrados[c].MATE_AMOUNT +''
+              "</td> <td class='center-align'>" + (Encontrados[c].MATE_OBSERVATION === null ? '' : Encontrados[c].MATE_OBSERVATION ) + "</td></tr>"; 
+            }
+            document.getElementById("table").innerHTML = Codigo;
+          }
+
+          $(document).ready(function () 
+          {
+            $('select').formSelect();
+            $('.modal').modal();
+          });
+
+          $('#botao_cadastrar').on('click', function () 
+          {
+            var data = {
+              MATE_NAME: $("#nome_material").val(),
+              //MATE_PACKING: $("#embalagem").val(),
+              //MATE_AMOUNT: $("#quantidade").val(),
+              MATE_OBSERVATION: $("#observacoes").val(),
+              MATE_ACTIVE: true
+            };
+            
+            var Error = "";
+            
+            if(data.MATE_NAME.length >= 1)
+            {
+              if(true)
+              {
+                if(true)
                 {
-                   "Nome": $("#nome_material").val(),
-                   "Embalagem": $("#embalagem").val(),
-                   "Quantidade": $("#quantidade").val(),
-                   "Medida": $("#medida").val(),
-                   "Observacao": $("#observacoes").val()
-                };
-                
-                $.ajax
-                ({
-                  url: "CadastrarMaterial",
+                  $.ajax({
+                  url: "materiais",
                   type : 'POST',
-                  data : data,
+                  data : JSON.stringify(data),
+                  contentType: 'application/json',
                   beforeSend : function()
                   {
-                   Swal.fire({
+                    Swal.fire({
                       title: 'Cadastrando...',
                       timer: 10000,
-                      onBeforeOpen: () => {
+                      onBeforeOpen: () => 
+                      {
                         Swal.showLoading()
                       },
-                      onClose: () => {
+                      onClose: () => 
+                      {
                         clearInterval(timerInterval)
                       }
                     })
                   }
-                 })
-                 .done(function(msg)
-                 {
-                      $("#DialogText").html(msg);
-                 })
-                 .fail(function(jqXHR, textStatus, msg)
-                 {
-                      alert(msg);
-                 });
-            });
+                  })
+                  .done(function(msg)
+                  {
+                    console.log('RESPOSTA DA INSERÇÃO: ', msg);
+                    $("#DialogText").html(msg);
+                  })
+                  .fail(function(jqXHR, textStatus, msg)
+                  {
+                    alert(msg);
+                  });
+                }
+              }
+            }
+            else
+            {
+              Error = "Favor digitar o nome do Material corretamente."
+            }
+            
+            if(Error.length >= 1)
+            {
+              Swal.fire(
+              {
+                position: 'top-end',
+                type: 'error',
+                title: Error,
+                showConfirmButton: false,
+                timer: 2000,
+                onClose: () => {
+                  $("#btcadastrar").trigger('click');
+                }
+              });
+            }
+          });
         </script>
     </div>
 </div>

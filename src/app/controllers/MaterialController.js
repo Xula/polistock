@@ -7,11 +7,37 @@ class MaterialController {
   }
 
   async store(req, res) {
-    const response = await Material.create(req.body);
-    return res.json(response);
+    console.log('Inserção de material: ', req.body);
+    //const response = await Material.create(req.body);
+    //console.log('RESULTADO: ', response);
+    //return res.json(response);
+    
+    Material.create(req.body)
+      .then(response => {
+        return res.render('layouts/LayoutDialog', 
+        {
+            title: "Material cadastrado.",
+            type: 1,
+            resposta: response
+        });
+      })
+      .catch(error => {
+        return res.render('layouts/LayoutDialog', 
+        {
+            title: "Não foi possivel cadastrar o material.",
+            type: 0,
+            resposta: error
+        });
+      });
   }
 
   async update(req, res) {
+    /* {
+      "MATE_ID": 1,
+      "MATE_NAME":"dente",
+      ...
+  }*/
+    
     const { MATE_ID } = req.body; //  const { id } = req.body; === cons id = req.body.id
     const materialExists = await Material.findByPk(MATE_ID);
 
