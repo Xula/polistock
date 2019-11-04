@@ -50,6 +50,11 @@ class MovementController {
 
     return res.json(response);
   }
+  
+  async mediasConsumo(req, res) {
+    const response = [] //fazer a querry
+    return res.json(response);
+  }
 }
 
 export default new MovementController();
