@@ -1,0 +1,50 @@
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <h2>Médias de Consumo</h2>
+        </div>        
+    </div>
+    <div class="row" id="conteudo">
+        <div class="row valign-wrapper">
+            <div class="col s11">
+                <form>
+                    <div class="input-field">
+                        <i class="material-icons prefix">search</i>
+                        <input id="search" onkeyup="Buscando()" type="text" placeholder="Buscar...">
+                    </div>
+                </form>
+            </div>
+            <div class="col s1">
+                <button data-target="modal_cadastrar_material" class="btn modal-trigger waves-effect waves-light"><i
+                        class="material-icons" id="btcadastrar">add</i></button>
+            </div>
+        </div>
+        <div class="row">
+            <table class="striped">
+                <thead>
+                    <tr>
+                        <th>Material</th>
+                        <th class="center-align">Média</th>
+                    </tr>
+                </thead>
+
+                <tbody id="table">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        let materiais;
+        $.get('mediasConsumo', (data) => {
+            console.log(data);
+            materiais = data;
+            if (!materiais.length === 0) {
+              const conteudo = '<h4>Não há dados para exibir.</h4>';
+              $('#conteudo').html(conteudo);
+            } else {
+              //preencher tabela
+            }
+          });
+    </script>
+</div>

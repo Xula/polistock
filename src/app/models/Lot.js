@@ -16,7 +16,8 @@ class Lot extends Model {
         },
         LOT_VALIDITY: {
           type: Sequelize.DATE,
-          allowNull: false,
+          defaultValue: null,
+          allowNull: true,
         },
         LOT_ACTIVE: {
           type: Sequelize.BOOLEAN,

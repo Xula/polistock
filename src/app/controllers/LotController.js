@@ -33,7 +33,7 @@ class LotController {
         return res.render('layouts/LayoutDialog', {
           title: 'Não foi possivel cadastrar o lote.',
           type: 0,
-          reposta: error
+          resposta: error
         });
       });
     

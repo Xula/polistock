@@ -36,6 +36,16 @@ routes.get('/ListarLotes', (req, res) => {
   
 });
 
+routes.get('/RelatorioMediasConsumo', (req, res) => {
+  
+  res.render('layouts/LayoutAdmin', 
+        {
+            title: 'Polistock - Médias de Consumo de Materiais',
+            body: ejs.render(fs.readFileSync(__dirname + '/public/html/RelatorioMediasConsumo.ejs', 'utf8'))
+        });
+  
+});
+
 // Database access routes
 routes.get('/materiais', MaterialController.index);
 routes.post('/materiais', MaterialController.store);
@@ -53,6 +63,7 @@ routes.put('/lots', LotController.update);
 routes.delete('/lots', LotController.destroy);
 
 routes.get('/movements', MovementController.index);
+routes.get('/mediasConsumo', MovementController.mediasConsumo);
 routes.post('/movements', MovementController.store);
 routes.put('/movements', MovementController.update);
 routes.delete('/movements', MovementController.destroy);
