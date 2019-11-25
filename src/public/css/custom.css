@@ -1,0 +1,11 @@
+ul.listrado > li:nth-child(odd) > div.listradoFilho {
+  background-color: rgba(142, 36, 170, 0.15)
+}
+
+table.borderless tr {
+  border-bottom: none
+}
+
+table.borderless tr td {
+  padding: 0px
+}

@@ -1,0 +1,122 @@
+<div class="container">
+    <div class="row">
+        <div class="input-field col s2">
+            <input type="text" class="datepicker" id="dataInicial">
+            <label for="dataInicial">Data Inicial</label>
+        </div>
+        <div class="input-field col s2">
+            <input type="text" class="datepicker" id="dataFinal">
+            <label for="dataFinal">Data Final</label>
+        </div>
+        <div>
+            <div class="input-field col s2">
+                <a class="waves-effect waves-light btn" id="botaoGerar" disabled>Gerar</a>
+            </div>
+        </div>
+    </div>
+  
+    <div class="row" id="conteudo">
+        
+    </div>
+  
+    <script>
+        var dataInicialGlobal;
+        var dataFinalGlobal;
+        $(document).ready(function(){
+          $('.datepicker').datepicker({
+            i18n: {
+              months: [ 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro' ],
+              monsthsShort: [ 'Jan', 'Fev', 'Mar', 'Abr', 'Maio', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez' ],
+              weekdaysShort: [ 'Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb' ],
+            },            
+            format: 'dd/mm/yyyy',
+            onClose: () => {
+              const dataInicial = $('#dataInicial').val();
+              const dataFinal = $('#dataFinal').val();
+              if (dataInicial !== '' && dataFinal !== '') {
+                $('#botaoGerar').attr('disabled', false);
+              }
+              
+            }
+          });          
+        });
+      
+        const conteudoTabela = `<div class="row valign-wrapper">
+                                    <div class="col s12">
+                                        <form>
+                                            <div class="input-field">
+                                                <i class="material-icons prefix">search</i>
+                                                <input id="search" onkeyup="Buscando()" type="text" placeholder="Buscar...">
+                                            </div>
+                                        </form>
+                                    </div>            
+                                </div>
+                                <div class="row">
+                                    <div class="col s2 offset-s10">
+                                        <a class="waves-effect waves-light btn" id="botaoExportar" onClick="exportarRelatorio()">Exportar</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <table class="striped" id="tabela">
+                                        <thead>
+                                            <tr>
+                                                <th>Material</th>
+                                                <th class="center-align">Data de Entrada</th>
+                                                <th class="center-align">Quantidade</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="table">
+                                            
+
+                                        </tbody>
+                                    </table>
+                                </div>`;
+        const conteudoMensagem = `<h4>Não há dados para o período informado.</h4>`;
+        
+        
+        $('#botaoGerar').on('click', () => {
+          let dataInicio = $('#dataInicial').val().split('/').reverse().join('-');
+          let dataFim = $('#dataFinal').val().split('/').reverse().join('-');
+          console.log(dataInicio, dataFim);
+          $.ajax({
+            url: "relatorioEntrada",
+            type : 'POST',
+            data : JSON.stringify({ inicio: dataInicio, fim: dataFim }),
+            contentType: 'application/json',
+            success: res => {
+              console.log(res, 'suc');
+              $('#conteudo').html(conteudoTabela);
+              var rows = '';
+              res.forEach(mov => {
+                let dado = `<tr>
+                                <td>${mov.MATE_NAME}</td>
+                                <td class="center-align">${mov.MOVE_DATE.split('T')[0].split('-').reverse().join('/')}</td>
+                                <td class="center-align">${mov.MOVE_QUANTITY}</td>
+                              </tr>`;
+                rows += dado;
+              })
+              $('#table').html(rows);
+            },
+            error: (err) => {
+              console.log(err.res, 'err');
+              $('#conteudo').html(conteudoMensagem);
+            }
+            });
+        });
+      
+      function exportarRelatorio() {
+        //exportar relatório
+        let doc = new jsPDF('p', 'pt');
+        const elem = document.getElementById("tabela");
+        const res = doc.autoTableHtmlToJson(elem);
+        const texto = `Entrada de Materiais - ${dataInicialGlobal} à ${dataFinalGlobal}`;
+        doc.text(20, 20, texto);
+        doc.autoTable(res.columns, res.data, {
+          styles: {
+            halign: 'center'
+          }
+        });
+        doc.save("Relatorio_Entrada_de_Materiais.pdf");
+      }
+    </script>
+</div>

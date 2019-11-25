@@ -8,6 +8,9 @@
                 </div>
             </form>
         </div>
+      
+
+      
         <div class="col s1">
             <button data-target="modal_cadastrar_material" class="purple darken-1 btn modal-trigger waves-effect waves-light"><i
                     class="material-icons" id="btcadastrar">add</i></button>
@@ -39,7 +42,6 @@
                     </div>
                 </div>
               
-                
                 <!--
                 <div class="row">
                     <div class="input-field col s4">
@@ -74,24 +76,76 @@
                 <span>Cadastrar</span>
             </button>
         </div>
+  </div>
+   <div id="modal_editar_material" class="modal">
+     <div class='modal-content'>
+        <h3>Editar Material</h3>
+        <form>
+          <div class='row'>
+            <div class='col s12'> 
+              <div class='row'>
+                <div class='input-field col s12'> 
+                  <label for='material-input' class="active" >Nome do material</label><br>
+                  <input disabled id="nome" name="nome"  type='text' id='material-input' class='autocomplete'> 
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class='row'> 
+            <div class='input-field col s12'> 
+              <label for='observacoes-input' >Observações</label><br>
+              <input id="obs" name="obs" type='text'> 
+              
+            </div>
+          </div>
+        </form> 
+      </div>
+      <div class='modal-footer'> 
+        <button type='button'  class='modal-close waves-effect waves-light btn red darken-1'id='botao_cancelar'> 
+          <i class='material-icons left'>check</i>
+          <span>Cancelar</span>
+        </button>
+        <button type='button' class='modal-close waves-effect waves-light btn red darken-1'id='botao_excluir'> 
+          <i class='material-icons left'>delete</i>
+          <span>Excluir</span>
+        </button>
+        <button type='button' onclick='editarMaterial()' class='modal-close waves-effect waves-light btn green darken-1' id='botao_editar'>
+          <i class='material-icons left'>check</i>
+          <span>Salvar</span>
+        </button>
+      </div>          
+  </div>
         <script>
           var materiais;
           $.get('materiais', (data) => {
             console.log(data);
             materiais = data;
+            buscar = data;
             Buscando();
           });
-
+         testeID = 99999;
           function Buscando()
           {
             var Encontrados = materiais.filter(Material => Material.MATE_NAME.toUpperCase().includes(document.getElementById("search").value.toUpperCase()));
             var Codigo = "";
-            for(c = 0; c < Encontrados.length; c++)
-            {
+            for(c = 0; c < Encontrados.length; c++){
               Codigo += "<tr><td>" + Encontrados[c].MATE_NAME +
               //"</td> <td class='center-align'>" + Encontrados[c].MATE_PACKING + 
               //"</td> <td class='center-align'>" + Encontrados[c].MATE_AMOUNT +''
-              "</td> <td class='center-align'>" + (Encontrados[c].MATE_OBSERVATION === null ? '' : Encontrados[c].MATE_OBSERVATION ) + "</td></tr>"; 
+              "</td> <td class='row_data'>" + (Encontrados[c].MATE_OBSERVATION === null ? '' : Encontrados[c].MATE_OBSERVATION ) + 
+                "</td>"+
+                "<td class ='center-align'>"+
+               "<div class='col s1'>" + //====================BOTÃO EDITAR
+                "<button data-target='modal_editar_material' onclick='editar("+ Encontrados[c].MATE_ID +")' class='grey darken-4 btn modal-trigger waves-effect waves-light1'>" +
+                "<i class='material-icons' id='bteditar'>edit</i>" + 
+                "</button>" +
+                "</div>" +
+                "</td>"+
+                "<td>"+
+                "</td></tr>";
+                                                                                 
+                                                                    
             }
             document.getElementById("table").innerHTML = Codigo;
           }
@@ -99,7 +153,14 @@
           $(document).ready(function () 
           {
             $('select').formSelect();
-            $('.modal').modal();
+            $('.modal').modal({
+              ready: function(modal, trigger) {
+      // Do whatever you want to do with your modal and trigger button
+      // For example here 'id' and 'data-id' attributes of trigger are displayed in modal
+      modal.find('#trigger-id').text(trigger.attr('id'));
+      modal.find('#attr-data-id').text(trigger.data('id'));
+    }
+            });
           });
 
           $('#botao_cadastrar').on('click', function () 
@@ -114,19 +175,15 @@
             
             var Error = "";
             
-            if(data.MATE_NAME.length >= 1)
-            {
-              if(true)
-              {
-                if(true)
-                {
+            if(data.MATE_NAME.length >= 1){
+              if(true){
+                if(true){
                   $.ajax({
                   url: "materiais",
                   type : 'POST',
                   data : JSON.stringify(data),
                   contentType: 'application/json',
-                  beforeSend : function()
-                  {
+                  beforeSend : function(){
                     Swal.fire({
                       title: 'Cadastrando...',
                       timer: 10000,
@@ -153,15 +210,12 @@
                 }
               }
             }
-            else
-            {
+            else{
               Error = "Favor digitar o nome do Material corretamente."
             }
             
-            if(Error.length >= 1)
-            {
-              Swal.fire(
-              {
+            if(Error.length >= 1){
+              Swal.fire({
                 position: 'top-end',
                 type: 'error',
                 title: Error,
@@ -173,6 +227,111 @@
               });
             }
           });
+          
+          
+           //Função de confirmação de edição de material
+        function editarMaterial() {}
+        
+          $('#botao_editar').on('click', function () 
+          {
+            
+            var data = {
+              MATE_ID: testeID,
+              MATE_NAME: $("#nome").val(),
+              MATE_OBSERVATION: $("#obs").val(),
+              MATE_ACTIVE:true
+            };
+            var Error = "";
+                  $.ajax({
+                  url: "EditarMaterial",
+                  type : 'POST',
+                  data : JSON.stringify(data),
+                  contentType: 'application/json',
+                  beforeSend : function(){
+                    Swal.fire('Material editado com sucesso')
+                  }
+                  })
+                  .done(function(msg)
+                  {
+                    console.log('RESPOSTA DA ALTERAÇÃO: ', msg);
+                    $("#DialogText").html(msg);
+                    window.location.reload();
+                  })
+                  .fail(function(jqXHR, textStatus, msg)
+                  {
+                    alert(msg);
+                  });
+          });
+          
+          
+          
+          // A variável testeID guarda o ID do Material a ser editado
+          function editar(m){
+            testeID = m;
+            //alert(testeID); //um alert só de teste, para conferir se está realmente passando o ID
+            $('#modal_editar_material').modal('open');
+            
+            for(var i=0; i < buscar.length; i++){
+              if(buscar[i].MATE_ID == testeID){
+               // alert(buscar[i].MATE_NAME);
+                //alert(buscar[i].MATE_OBSERVATION);
+                
+                document.getElementById("nome").value = buscar[i].MATE_NAME;
+                document.getElementById("obs").value = buscar[i].MATE_OBSERVATION;
+              }
+            }
+          }
+     //====================== FUNÇÃO PARA DESATIVAR MATERIAL ==========================================    
+  $('#botao_excluir').on('click', function () 
+          {
+            
+            var data = {
+              MATE_ID: testeID,
+            };
+    Swal.fire({
+  title: 'Tem certeza?',
+  text: "Você não poderá reverter esta ação!",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Sim, remova isso!'
+}).then((result) => {
+  if (result.value) {
+     $.ajax({
+                  url: "DesativarMaterial",
+                  type : 'POST',
+                  data : JSON.stringify(data),
+                  contentType: 'application/json',
+                  
+                  })
+                  .done(function(msg)
+                  {
+                    console.log('RESPOSTA DA DELEÇÃO: ', msg);
+                    $("#DialogText").html(msg);
+                  })
+                  .fail(function(jqXHR, textStatus, msg)
+                  {
+                    alert(msg);
+                  });
+    Swal.fire(
+      'Removido!',
+      'Material foi removido',
+      'success',
+    )
+    setTimeout(function () { 
+      location.reload();
+    }, 5000);
+
+  }
+})
+                
+    
+
+          });
+          
+          
+          
         </script>
     </div>
 </div>

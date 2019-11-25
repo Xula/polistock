@@ -5,28 +5,30 @@
 <head>
   <meta charset="utf-8">
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="js/jquery.min.js"></script>
   <!-- Compiled and minified CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link rel="stylesheet" href="css/materialize.css">
   <!-- Compiled and minified JavaScript -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+  <script src="js/materialize.min.js"></script>
+  <link href="css/icon.css" rel="stylesheet">
+  <script src="js/sweetalert2.js"></script>
 
 </head>
 
-<body class="teal lighten-2">
+<body class="purple darken-4">
   <div class="container">
     <div class="row">
       <div class="col s12 valign-wrapper" style="height: 100vh;">
         <div class="col s6 offset-s3">
           <div class="card z-depth-3">
-            <div class="card-content">
-              <span class="card-title center-align"><b>Login Polistock</b></span>
+            <div class="card-content" style="text-align:center;">
+              <a id="logo-container" href="PainelAdmin">
+                <object id="front-page-logo" style="width:60%;margin:auto;" type="image/png" data="https://cdn.glitch.com/045565ad-d70a-42b4-833e-497b68b6d632%2F045565ad-d70a-42b4-833e-497b68b6d632_polistock_logo.png?v=1573563847729">Your browser does not support SVG</object>
+              </a>
               <form>
                 <div class="row">
                   <div class="input-field col s12">
-                    <i class="material-icons prefix">account_circle</i>
+                    <i class="material-icons prefix" >account_circle</i>
                     <input id="usuario" type="text" class="validate" required>
                     <label for="usuario">Usuário</label>
                   </div>
@@ -37,6 +39,9 @@
                     <input id="senha" type="password" class="validate" required>
                     <label for="senha">Senha</label>
                   </div>
+                </div>
+                <div class="row" hidden>
+                  <p class="red-text text-darken-1" id="msg_erro"></p>
                 </div>
                 <div class="row">
                   <div class="col s8 offset-s2">
@@ -50,10 +55,25 @@
       </div>
     </div>
     <script>
-      $('#botao_entrar').on('click', () =>{
-        const usuario = $('#usuario').val();
-        const senha = $('#senha').val();
+      $('#botao_entrar').on('click', () => {
+        $('#msg_erro').parent().attr('hidden', true);
+        const data = {USER_LOGIN: $('#usuario').val(), USER_PASSWORD: $('#senha').val()};
         //...
+         $.ajax({
+            url: "login",
+            type : 'POST',
+            data : JSON.stringify(data),
+            contentType: 'application/json',
+            success: res => {
+              console.log(res, 'suc');
+              window.location = res;
+            },
+            error: msg => {
+              console.log(msg.responseJSON, 'err');
+              $('#msg_erro').html(msg.responseJSON).parent().removeAttr('hidden');
+              
+            }
+            });
       });
     </script>
   </div>

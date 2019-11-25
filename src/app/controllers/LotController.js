@@ -13,30 +13,45 @@ class LotController {
           attributes: ['MATE_NAME'], // Se nao passar essa linha retorna todas colunas na busca
         },
       ],
+      where: {
+        LOT_ACTIVE: true,
+      },
     });
     return res.json(response);
   }
 
   async store(req, res) {
-    
-    // Movement.create(req.body)
-    
+    // cria o registro do lote no banco
     Lot.create(req.body)
-      .then(response => {
+      .then(async response => {
+        // console.log('sessao', req.session.usuario);
+        // console.log('inserção do lote:', response.dataValues);
+      
+        // cria o registro do movimento daquele novo lote que foi inserido
+        await Movement.create({
+          MOVE_DATE: new Date(),
+          MOVE_TYPE: 2,
+          MOVE_QUANTITY: parseInt(response.dataValues.LOT_QUANTITY),
+          LOT_ID: response.dataValues.LOT_ID,
+          USER_ID: req.session.usuario ? req.session.usuario.id : 1,
+        })
+          .then(r => console.log('MOVIMENTO CRIADO: ', r))
+          .catch(e => console.log('erro movimento:', e));
+
         return res.render('layouts/LayoutDialog', {
           title: 'Lote cadastrado.',
           type: 1,
-          resposta: response
+          resposta: response,
         });
       })
       .catch(error => {
+        // console.log(error);
         return res.render('layouts/LayoutDialog', {
           title: 'Não foi possivel cadastrar o lote.',
           type: 0,
-          resposta: error
+          resposta: error,
         });
       });
-    
   }
 
   async update(req, res) {

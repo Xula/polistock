@@ -21,3 +21,39 @@
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 }
+
+.NotificationBox {
+  background-color:red;
+  border-radius:100%;
+  padding:0px;
+  width: 20px;
+  height:20px;
+  text-align:center;
+  margin-top:-30px;
+  margin-left:20px;
+}
+
+.NotificationNumber {
+  color:white;
+  position:absolute;
+  top:-1px;
+  right: 6px;
+  font-size:12px;
+}
+
+@media only screen and (max-width: 600px) {
+	.NotificationNumber {
+  color:white;
+  position:absolute;
+  top:-6px;
+  right: 6px;
+  font-size:12px;
+}
+}
+
+.marcadaagua{
+	height: 50%;
+	margin-left:-70px;
+	margin-top:50px;
+	opacity:20%;
+}
