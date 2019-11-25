@@ -8,71 +8,49 @@
                 </div>
             </form>
         </div>
-  
-      <div class="col s1">
-          <button data-target="modal_cadastrar_material" class="purple darken-1 btn modal-trigger waves-effect waves-light">
-            <i class="material-icons" id="btcadastrar">add</i>
-          </button>
-      </div>
     </div>
     <div class="row" id="lotes">
       
     </div>
   
     <!-- MODAL -->
-    <div id="modal_cadastrar_material" class="modal">
+    <div id="modal_editar_material" class="modal">
         <div class="modal-content">
-            <h3>Cadastrar Novo Lote</h3>
+          <span id="NomeLote"></span>
             <form>
-              <div class="row">
-                <div class="input-field col s6">
-                  <input id="data_atual" type="text" required disabled>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col s12">
-                  <div class="row">
-                    <div class="input-field col s12">
-                      <input type="text" id="autocomplete-input" class="autocomplete">
-                      <label for="autocomplete-input">Material</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
               <div class="row">
                 <div class="input-field col s12">
                   <input id="quantidade" min="0" type="number" class="validate" required>
                   <label for="quantidade">Quantidade</label>
                 </div>
               </div>
-              <div class="row">
-                <div class="input-field col s12">
-                  <input id="validade" type="text" class="datepicker">
-                  <label for="validade">Validade</label>
-                </div>
-              </div>
               <div id="DialogText"></div>
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="modal-close waves-effect waves-light btn purple darken-1" id="botao_cadastrar">
+            <button type="button" class="modal-close waves-effect waves-light btn red darken-1" id="botao_cadastrar">
                 <i class="material-icons left">check</i>
-                <span>Cadastrar</span>
+                <span>Retirar</span>
             </button>
         </div>
       
         <script>
           var materiais;
-          
           var lotes;
           
+          var IDLote;
+          function saidaLote(id, Nome)
+          {
+            document.getElementById("NomeLote").innerHTML = "<h3>Fazer retirada do matérial:</h3><h4>" + Nome + "</h4>";
+            IDLote = id;
+          }
           
           var MateriaisELotes = new Array();
           function formataDados(){
             totMat = materiais.length;
             for(m = 0; m < totMat; m++){
               MatLot = lotes.filter(Lot => Lot.Material.MATE_NAME.toUpperCase().includes(materiais[m].MATE_NAME.toUpperCase()));
-              if(MatLot.length > 0){
+              //if(MatLot.length > 0){
                 MateriaisELotes.push({
                   MATE_ID: materiais[m].MATE_ID,
                   MATE_NAME: materiais[m].MATE_NAME,
@@ -80,7 +58,7 @@
                   MATE_ACTIVE: materiais[m].MATE_ACTIVE,
                   MATE_LOTS: MatLot
                 });
-              }
+              //}
             }
             //console.log(MateriaisELotes);
           }
@@ -105,7 +83,7 @@
                             <div class='collapsible-body'>
                               <table class='striped'>
                                 <thead><tr><th>Número do Lote</th><th>Quantidade</th><th>Validade</th></tr></thead>
-                                ${retornaLotesFormatados(Encontrados[c].MATE_LOTS)}
+                                ${retornaLotesFormatados(Encontrados[c].MATE_NAME, Encontrados[c].MATE_LOTS)}
                               </table>
                             </div>
                           </li>`;
@@ -115,18 +93,15 @@
               Codigo += "</ul>";
             }
             
-            function retornaLotesFormatados(lotes){
+            function retornaLotesFormatados(nome, lotes){
               //console.log("Lotes: ", lotes);
               let lotesStr = "";
               let tot = lotes.length;
-              for(l = 0; l < tot; l++){
-                if(lotes[l].LOT_VALIDITY === null)
-                  data = '';
-                else{
-                  data = new Date(lotes[l].LOT_VALIDITY);
-                  data = `${data.getDate()+1}/${data.getMonth()+1}/${data.getFullYear()}`;
-                }
-                lotesStr += `<tr><td><span>${lotes[l].LOT_ID}</span></td><td><span>${lotes[l].LOT_QUANTITY}</span></td><td><span>${(lotes[l].LOT_VALIDITY === null ? ' ' : data)}</span></td></tr>`;
+              for(l = 0; l < tot; l++)
+              {
+                data = new Date(lotes[l].LOT_VALIDITY);
+                data = `${data.getDate()+1}/${data.getMonth()+1}/${data.getFullYear()}`;
+                lotesStr += `<tr><td><span>${lotes[l].LOT_ID}</span></td><td><span>${lotes[l].LOT_QUANTITY}</span></td><td><span>${(lotes[l].LOT_VALIDITY === null ? ' ' : data)}</span></td>       <td><button data-target='modal_editar_material' data-target="modal_saida_lote" onclick="saidaLote(${lotes[l].LOT_ID}, '${nome}')" class='material-icons grey darken-4 btn modal-trigger waves-effect waves-light1'>exit_to_app</button></td>      </tr>`;
               }
               return lotesStr;
             }
@@ -193,76 +168,51 @@
           $('#botao_cadastrar').on('click', function () 
           {
             var Error = "";
-            
-            
-            console.log(JSON.stringify(data));
-            if(materiais.find(Mat => Mat.MATE_NAME === $("#autocomplete-input").val()))
-            {
-              var MaterialSelecionado = materiais.find(Mat => Mat.MATE_NAME === $("#autocomplete-input").val()).MATE_ID;
-              var data = {
-                MATE_ID: MaterialSelecionado,
-                LOT_QUANTITY: $("#quantidade").val(),
-                LOT_VALIDITY: $("#validade").val(),
-                LOT_ACTIVE: true
+            var data = {
+                LOT_ID: IDLote,
+                QTD: $("#quantidade").val()
               };
-            }
             
-            if($("#autocomplete-input").val().length > 0)
-            {   
-              if($("#quantidade").val() > 0)
-              {
-                if($("#validade").val().length > 0)
-                {
-                  $.ajax({
-                  url: "lots",
-                  type : 'POST',
-                  data : JSON.stringify(data),
-                  contentType: 'application/json',
-                  beforeSend : function()
-                  {
+            if($("#quantidade").val() > 0)
+            {
+              $.ajax({
+              url: "Retirar",
+              type : 'POST',
+              data : JSON.stringify(data),
+              contentType: 'application/json',
+              beforeSend : function(){
                     Swal.fire({
-                      title: 'Cadastrando...',
-                      timer: 10000,
+                      title: 'Retirando Material...',
+                      timer: 1000,
                       onBeforeOpen: () => 
                       {
                         Swal.showLoading()
                       },
                       onClose: () => 
                       {
-                        clearInterval(timerInterval)
+                        //clearInterval(timerInterval)
                       }
                     })
                   }
                   })
-                  .done(function(msg)
-                  {
-                    //console.log('RESPOSTA DA INSERÇÃO: ', msg);
-                    $("#DialogText").html(msg);
-                  })
-                  .fail(function(jqXHR, textStatus, msg)
-                  {
-                    alert(msg);
-                  });
-                }
-                else
-                {
-                  Error = "Você não informou a Data de Validade."
-                }
-              }
-              else
+              .done(function(msg)
               {
-                Error = "Quantidade invalida."
-              }
+                console.log('RESPOSTA DA INSERÇÃO: ', msg);
+                $("#DialogText").html(msg);
+              })
+              .fail(function(jqXHR, textStatus, msg)
+              {
+                alert(msg);
+              });
             }
             else
             {
-              Error = "Favor selecionar um material."
+              Error = "Quantidade invalida."
             }
             
             if(Error.length > 0)
             {
-              if(Error != 'Você não informou a Data de Validade.'){
-                Swal.fire(
+              Swal.fire(
                 {
                   position: 'center',
                   type: 'error',
@@ -273,68 +223,6 @@
                     $("#btcadastrar").trigger('click');
                   }
                 });
-              }
-              else{
-                Swal.fire({
-                  title: Error,
-                  text: "Você tem certeza que isto está certo?",
-                  type: 'warning',
-                  showCancelButton: true,
-                  confirmButtonColor: '#FECA54',
-                  cancelButtonColor: '#75C46B',
-                  focusConfirm: false,
-                  focusCancel: true,
-                  confirmButtonText: 'Sim, isto está certo.',
-                  cancelButtonText: 'Não, eu vou corrigir!'
-                }).then((result) => {
-                  if (result.value) {
-                    let MaterialSelecionado = materiais.find(Mat => Mat.MATE_NAME === $("#autocomplete-input").val()).MATE_ID;
-                    let data = {
-                      MATE_ID: MaterialSelecionado,
-                      LOT_QUANTITY: $("#quantidade").val(),
-                      LOT_VALIDITY: null,
-                      LOT_ACTIVE: true
-                    };
-                    console.log(data);
-                    $.ajax({
-                      url: "lots",
-                      type : 'POST',
-                      data : JSON.stringify(data),
-                      contentType: 'application/json',
-                      beforeSend : function()
-                      {
-                        Swal.fire({
-                          title: 'Cadastrando...',
-                          timer: 10000,
-                          onBeforeOpen: () => 
-                          {
-                            Swal.showLoading()
-                          },
-                          onClose: () => 
-                          {
-                            clearInterval(timerInterval)
-                          }
-                        })
-                      }
-                      })
-                      .done(function(msg)
-                      {
-                        //console.log('RESPOSTA DA INSERÇÃO: ', msg);
-                        $("#DialogText").html(msg);
-                      })
-                      .fail(function(jqXHR, textStatus, msg)
-                      {
-                        //console.log('RESPOSTA DA NÃO INSERÇÃO: ', msg);
-                        alert(msg);
-                      });
-                    
-                  }
-                  else{
-                    $("#btcadastrar").trigger('click');
-                  }
-                });
-              }
-              
             }
           });
           

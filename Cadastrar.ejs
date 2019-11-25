@@ -1,0 +1,151 @@
+<div class="container">
+
+      <div class="row valign-wrapper">
+          <div class="col s11">
+              <form>
+                  <div class="input-field">
+                      <i class="material-icons prefix">search</i>
+                      <input id="search" onkeyup="Buscando()" type="text" placeholder="Buscar...">
+                  </div>
+              </form>
+          </div>
+        
+  
+        
+          <div class="col s1">
+              <button data-target="modal_cadastrar_secretaria" class="purple darken-1 btn modal-trigger waves-effect waves-light"><i
+                      class="material-icons" id="btcadastrar">add</i></button>
+          </div>
+      </div>
+      <div class="row">
+          <table class="striped">
+              <thead>
+                  <tr>
+                      <th>Nome</th>
+                      <th class="center-align">Login</th>
+                  </tr>
+              </thead>
+  
+              <tbody id="table">
+                            <tr>
+                              <td>ADEMIR ROCHA </td>                   
+                              <td class="center-align">admin</td>
+                            </tr>
+                 <tr>
+                              <td>ÁGATHA AZEVEDO MELO</td>                   
+                              <td class="center-align">agatha.melo</td>
+                            </tr>
+                 <tr>
+                              <td>BIANCA GONÇALVES PEREIRA</td>                   
+                              <td class="center-align">bianca.pereira</td>
+                            </tr>
+                 <tr>
+                              <td>CLAUDEMIR FEITOSA BARROS</td>                   
+                              <td class="center-align">claudemir</td>
+                            </tr>
+              </tbody>
+          </table>
+      </div>
+      
+    
+
+    <!-- MODAL Adicionar Secretaria-->
+    <div id="modal_cadastrar_secretaria" class="modal">
+      <div class="modal-content">
+        <h3>Cadastrar Secretari@</h3>
+        <form>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="usuario-input" type="text" class="validate" required>
+              <label for="usuario-input">Nome Completo</label>
+              <span class="helper-text" data-error="obrigatório"></span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="login-input" type="text" class="validate" required>
+              <label for="login-input">Login</label>
+              <span class="helper-text" data-error="obrigatório"></span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="senha-input" type="text" class="validate" required>
+              <label for="senha-input">Senha</label>
+              <span class="helper-text" data-error="obrigatório"></span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="confirmarsenha-input" type="text" class="validate" required>
+              <label for="confirmarsenha-input">Confirmar Senha</label>
+              <span class="helper-text" data-error="obrigatório"></span>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="modal-close waves-effect waves-light btn red darken-1"
+          id="botao_cancelar">
+          <i class="material-icons left">check</i>
+          <span>Cancelar</span>
+        </button>
+        <button type="button" onclick="funcao1()" class="modal-close waves-effect waves-light btn green darken-1"
+          id="botao_cadastrar">
+          <i class="material-icons left">check</i>
+          <span>Salvar</span>
+        </button>
+      </div>
+
+      <script>
+        var materiais;
+
+        $(document).ready(function () {
+          $('select').formSelect();
+          $('.modal').modal();
+        });
+
+
+        //Função de confirmação de cadastro de funcionario
+        function funcao1() {
+          if ($("#usuario-input").val().length < 1) {
+
+            Swal.fire({
+              type: 'error',
+              title: 'Oops...',
+              text: 'O nome do usuario não poder ser vazio',
+            })
+          }
+
+          if ($("#login-input").val().length < 1) {
+
+            Swal.fire({
+              type: 'error',
+              title: 'Oops...',
+              text: 'O Login do usuario não poder ser vazio',
+            })
+          }
+
+          if ($("#senha-input").val().length < 1) {
+
+            Swal.fire({
+              type: 'error',
+              title: 'Oops...',
+              text: 'Insira uma senha para o usuário',
+            })
+          }
+          if ($("#confirmarsenha-input").val() != ("#senha-input").val()) {
+
+            Swal.fire({
+              type: 'error',
+              title: 'Senha inválida...',
+              text: 'senha e confirmar senha devem ser iguais',
+            })
+          }
+
+        }
+        
+
+      </script>
+    </div>
+  </div>
