@@ -21,6 +21,8 @@
 		<script src="js/materialize.min.js"></script>
     <script src="js/jspdf.min.js"></script>
     <script src="js/jspdf.plugin.autotable.js"></script>
+    <script src="../../js/datepicker/js/bootstrap-datepicker.js"></script>
+    <link rel="stylesheet" href="../../js/datepicker/css/datepicker.css">
     <link rel="stylesheet" href="../../css/custom.css">
 	</head>
 	<body>
@@ -28,16 +30,13 @@
 			<nav>
 				<div class="container">
 				  <div class="nav-wrapper">
-					<a href="PainelAdmin" class="brand-logo">Bem vindo <%= usuario %></a>
+					<a href="#" class="brand-logo">Bem vindo <%= usuario %></a>
 						<ul id="dropdown2" class="dropdown-content">
-							<li><a href="#!">Notificação 01</a></li>
-							<li><a href="#!">Notificação 02</a></li>
-							<li><a href="#!">Notificação 03</a></li>
 						</ul>
 						<a class="dropdown-trigger right" href="#!" data-target="dropdown2">
 							<i class="material-icons grey-text ">notifications</i>
 							<div class="NotificationBox right">
-								<p class="NotificationNumber">3</p>
+								<p id="NotificationNumber" class="NotificationNumber">3</p>
 							</div> 
 						</a>
 				  </div>
@@ -50,7 +49,7 @@
 			</div>
 			<ul id="nav-mobile" class="sidenav sidenav-fixed" style="transform: translateX(0%);">
 				<li class="logo">
-					<a id="logo-container" href="PainelAdmin" class="brand-logo">
+					<a id="logo-container" href="#" class="brand-logo">
 						<object id="front-page-logo" type="image/png" data="https://cdn.glitch.com/045565ad-d70a-42b4-833e-497b68b6d632%2Fpolistock_logo.png?v=1573518396216">Your browser does not support SVG</object>
 					</a>
 				</li>
@@ -65,9 +64,9 @@
 						<li class="bold"><a class="collapsible-header waves-effect waves-teal" tabindex="0"><i class="material-icons" style="color:white;">library_books</i>Relatórios</a>
 							<div class="collapsible-body">
 								<ul>
-									<li><a href="RelatorioEntradaMateriais">Entrada Materiais</a></li>
-                  <li><a href="RelatorioSaidaMateriais">Saida Materiais</a></li>
-									<li><a href="RelatorioMediasConsumo">Consumo</a></li>
+									<li><a href="RelatorioEntradaMateriais">Entrada de Materiais</a></li>
+                  <li><a href="RelatorioSaidaMateriais">Saida de Materiais</a></li>
+									<li><a href="RelatorioMediasConsumo">Médias de Consumo</a></li>
 								</ul>
 							</div>
 						</li>
@@ -75,16 +74,19 @@
 							<div class="collapsible-body">
 								<ul>
                   <li><a href="ListarMateriais">Cadastrar Materiais</a></li>
-									<li><a href="#">Cadastrar Conta</a></li>
-									<li><a href="#">Realizar Ajuste</a></li>
+									<li><a href="/CadastrarConta">Gerenciar Usuários</a></li>
 								</ul>
 							</div>
 						</li>
 					</ul>
 				</li>
+        <li class="bold">
+					<a href="/RelatorioAVencer" class="waves-effect waves-teal"><i class="material-icons" style="color:white;">access_alarm</i>Materiais à Vencer</a>
+				</li>
 				<li class="bold">
 					<a href="/logout" class="waves-effect waves-teal" style="color:red;"><i class="material-icons" style="color:white;">exit_to_app</i>Logout</a>
 				</li>
+        <img class="logouvv" src="https://cdn.glitch.com/045565ad-d70a-42b4-833e-497b68b6d632%2FVersao_horizontal_fundo_azul_PNG-01.png?v=1574771111526"/>
 				<img class="marcadaagua" src="https://cdn.glitch.com/045565ad-d70a-42b4-833e-497b68b6d632%2Ftooth.png?v=1573518396357"/>
 			</ul>
 		</header>
@@ -98,6 +100,23 @@
 				<%- body %>
 			</div>
 			<script src="js/init.js"></script>
+      <script>
+        
+          var Notificacoes = <%- notificacoes %>;
+          var Codigo = "";
+          for(c = 0; c < Notificacoes.length; c++)
+          {
+            Codigo += "<li><a href='#!'><span style='color:black;'>" + Notificacoes[c].LOT_QUANTITY + "</span> unidade(s) de <span>" + Notificacoes[c].MATE_NAME + "</span> venceu(ram) em <span style='color:red;'>" + dataAtualFormatada(Notificacoes[c].LOT_VALIDITY)+ "</span></a></li>";
+          }
+          document.getElementById("dropdown2").innerHTML = Codigo;
+        document.getElementById("NotificationNumber").innerHTML = Notificacoes.length;
+        
+        function dataAtualFormatada(Data)
+          {
+            console.log("data", Data)
+            return Data.split('-').reverse().join('/');
+          }
+      </script>
 		</main>
 	</body>
 </html>

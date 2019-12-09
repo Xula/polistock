@@ -77,6 +77,8 @@
         $('#botaoGerar').on('click', () => {
           let dataInicio = $('#dataInicial').val().split('/').reverse().join('-');
           let dataFim = $('#dataFinal').val().split('/').reverse().join('-');
+          dataInicialGlobal = $('#dataInicial').val();
+          dataFinalGlobal = $('#dataFinal').val();
           console.log(dataInicio, dataFim);
           $.ajax({
             url: "relatorioEntrada",
@@ -106,6 +108,7 @@
       
       function exportarRelatorio() {
         //exportar relatório
+
         let doc = new jsPDF('p', 'pt');
         const elem = document.getElementById("tabela");
         const res = doc.autoTableHtmlToJson(elem);

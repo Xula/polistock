@@ -2,7 +2,7 @@
     <div class="row">
         <div class="input-field col s2">
             <input type="text" class="datepicker" id="dataInicial">
-            <label for="dataInicial">Data Inicial</label>
+            <label for="dataInicial">Data Limite</label>
         </div>
         <div>
             <div class="input-field col s2">
@@ -17,7 +17,6 @@
   
     <script>
         var dataInicialGlobal;
-        var dataFinalGlobal;
         $(document).ready(function(){
           $('.datepicker').datepicker({
             i18n: {
@@ -55,8 +54,9 @@
                                     <table class="striped" id="tabela">
                                         <thead>
                                             <tr>
+                                                <th>Lote</th>
                                                 <th>Material</th>
-                                                <th class="center-align">Data de Entrada</th>
+                                                <th class="center-align">Data de Validade</th>
                                                 <th class="center-align">Quantidade</th>
                                             </tr>
                                         </thead>
@@ -71,10 +71,12 @@
         
         $('#botaoGerar').on('click', () => {
           let dataInicio = $('#dataInicial').val().split('/').reverse().join('-');
+          dataInicialGlobal = $('#dataInicial').val();
           console.log(dataInicio);
           $.ajax({
             url: "relatorioDataVencer",
             type : 'POST',
+            
             data : JSON.stringify({ inicio: dataInicio}),
             contentType: 'application/json',
             success: res => {
@@ -83,9 +85,10 @@
               var rows = '';
               res.forEach(mov => {
                 let dado = `<tr>
+                                <td>${mov.LOT_ID}</td>
                                 <td>${mov.MATE_NAME}</td>
-                                <td class="center-align">${mov.MOVE_DATE.split('T')[0].split('-').reverse().join('/')}</td>
-                                <td class="center-align">${mov.MOVE_QUANTITY}</td>
+                                <td class="center-align">${mov.LOT_VALIDITY.split('-').reverse().join('/')}</td>
+                                <td>${mov.LOT_QUANTITY}</td>
                               </tr>`;
                 rows += dado;
               })
@@ -103,14 +106,14 @@
         let doc = new jsPDF('p', 'pt');
         const elem = document.getElementById("tabela");
         const res = doc.autoTableHtmlToJson(elem);
-        const texto = `Materiais a vencer a partir de - ${dataInicialGlobal} `;
+        const texto = `Materiais a vencer até - ${dataInicialGlobal} `;
         doc.text(20, 20, texto);
         doc.autoTable(res.columns, res.data, {
           styles: {
             halign: 'center'
           }
         });
-        doc.save("Relatorio_Entrada_de_Materiais.pdf");
+        doc.save("Relatorio_Materiais_vencer.pdf");
       }
     </script>
 </div>

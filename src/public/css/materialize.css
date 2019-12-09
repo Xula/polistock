@@ -8893,7 +8893,7 @@ nav a {
 
 nav ul li a:hover,
 nav ul li.active {
-	background-color: #ea454b
+	background-color: #f4b5ff
 }
 
 td,
@@ -9031,7 +9031,7 @@ ul.sidenav.sidenav-fixed ul.collapsible-accordion .collapsible-body li a {
 }
 
 ul.sidenav.sidenav-fixed:hover {
-	overflow-y: auto
+	overflow-y: hidden
 }
 
 .bold>a {

@@ -7,8 +7,32 @@ class UserController {
   }
 
   async store(req, res) {
+    console.log('Inserção de material: ', req.body);
     const response = await User.create(req.body);
-    return res.json(response);
+    console.log('RESULTADO: ', response);
+   // return res.json(response);
+    
+    
+    const users = await User.findAll();
+    let check = false;
+    users.forEach(item => {
+      if (item.USER_LOGIN === req.body.USER_LOGIN ) {
+        const msg = 'Já existe um usuario cadastrado com o login informado.'
+        check = true;
+        return res.render('layouts/LayoutDialog', {
+          title: msg,
+          type: 0,
+          resposta: 'Erro ao cadastrar o usuario (usuario ja existente)',
+        });
+      }
+    });
+    
+    
+    
+    
+    
+    
+    
   }
 
   async update(req, res) {

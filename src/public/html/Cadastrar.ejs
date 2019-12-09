@@ -1,0 +1,203 @@
+<div class="container">
+
+      <div class="row valign-wrapper">
+          <div class="col s11">
+              <form>
+                  <div class="input-field">
+                      <i class="material-icons prefix">search</i>
+                      <input id="search" onkeyup="Buscando()" type="text" placeholder="Buscar...">
+                  </div>
+              </form>
+          </div>
+        
+  
+        
+          <div class="col s1">
+              <button data-target="modal_cadastrar_secretaria" class="purple darken-1 btn modal-trigger waves-effect waves-light"><i
+                      class="material-icons" id="btcadastrar">add</i></button>
+          </div>
+      </div>
+      <div class="row">
+        <table class="striped">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th class="center-align">Login</th>
+                </tr>
+            </thead>
+
+            <tbody id="table">
+            </tbody>
+        </table>
+    </div>
+      
+    
+
+    <!-- MODAL Adicionar Secretaria-->
+    <div id="modal_cadastrar_secretaria" class="modal">
+      <div class="modal-content">
+        <h3>Cadastrar Secretari@</h3>
+        <form>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="usuario-input" type="text" class="validate" required>
+              <label for="usuario-input">Nome Completo</label>
+              <span class="helper-text" data-error="obrigatório"></span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="login-input" type="text" class="validate" required>
+              <label for="login-input">Login</label>
+              <span class="helper-text" data-error="obrigatório"></span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="senha-input" type="password" class="validate" required>
+              <label for="senha-input">Senha</label>
+              <span class="helper-text" data-error="obrigatório"></span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="confirmarsenha-input" type="password" class="validate" required>
+              <label for="confirmarsenha-input">Confirmar Senha</label>
+              <span class="helper-text" data-error="obrigatório"></span>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="modal-close waves-effect waves-light btn red darken-1"
+          id="botao_cancelar">
+          <i class="material-icons left">check</i>
+          <span>Cancelar</span>
+        </button>
+        <button type="button" class="modal-close waves-effect waves-light btn green darken-1"
+          id="botao_cadastrar">
+          <i class="material-icons left">check</i>
+          <span>Salvar</span>
+        </button>
+      </div>
+</div>
+      <script>
+       var users;
+          $.get('users', (data) => {
+            console.log(data);
+            users = data;
+            buscar = data;
+            Buscando();
+          });
+        
+        function Buscando()
+          {
+            var Encontrados = users.filter(User => User.USER_NAME.toUpperCase().includes(document.getElementById("search").value.toUpperCase()));
+            var Codigo = "";
+            for(c = 0; c < Encontrados.length; c++){
+              Codigo += "<tr><td>" + Encontrados[c].USER_NAME +
+              "</td> <td class='row_data'>" + (Encontrados[c].USER_LOGIN === null ? '' : Encontrados[c].USER_LOGIN ) + 
+                "</td>"+
+                "<td class ='center-align'>"+
+                "</td>"+
+                "<td>"+
+                "</td></tr>";
+                                                                                 
+                                                                    
+            }
+            document.getElementById("table").innerHTML = Codigo;
+          }
+
+        $(document).ready(function () {
+          $('select').formSelect();
+          $('.modal').modal();
+        });
+
+
+        
+        $('#botao_cadastrar').on('click', function () 
+          {
+          var senha1 =$("#senha-input").val();
+          var senha2 =$("#confirmarsenha-input").val();
+          var teste=0;
+          
+          for(var i=0; i < buscar.length; i++){
+              if(buscar[i].USER_LOGIN == $("#login-input").val()){
+                teste=1;
+                
+              }
+          }
+          
+          if(teste == 1){
+            swal.fire('login de usuario já cadastrado')
+          }
+          else{
+          if(senha1==senha2){
+          
+            var data = {
+              USER_NAME: $("#usuario-input").val(),
+              USER_LOGIN: $("#login-input").val(),
+              USER_PASSWORD: $("#senha-input").val(),
+              USER_TYPE: 2
+            };
+            
+            var Error = "";
+            
+            if(data.USER_NAME.length >= 1){
+                  $.ajax({
+                  url: "users",
+                  type : 'POST',
+                  data : JSON.stringify(data),
+                  contentType: 'application/json',
+                  beforeSend : function(){
+                    
+                    Swal.fire({
+                      title: 'Cadastrando...',
+                      onBeforeOpen: () => 
+                      {
+                        Swal.showLoading()
+                      },
+                      onClose: () => 
+                      {
+                        clearInterval(timerInterval)
+                      }
+                    })
+                  }
+                  })
+                  .done(function(msg)
+                  {
+                    console.log('RESPOSTA DA INSERÇÃO: ', msg);
+                    $("#DialogText").html(msg);
+                    window.location.reload();
+                  })
+                  .fail(function(jqXHR, textStatus, msg)
+                  {
+                    alert(msg);
+                  });
+            }
+            else{
+              Error = "Favor digitar o nome do Usuario corretamente."
+            }
+            
+            if(Error.length >= 1){
+              Swal.fire({
+                position: 'top-end',
+                type: 'error',
+                title: Error,
+                showConfirmButton: false,
+                timer: 2000,
+                onClose: () => {
+                  $("#btcadastrar").trigger('click');
+                }
+              });
+            }
+          }
+          else{
+        Swal.fire('Senha e Confirmar Senha são diferentes')
+          }
+        
+        }});
+        
+      </script>
+    </div>
+  </div>

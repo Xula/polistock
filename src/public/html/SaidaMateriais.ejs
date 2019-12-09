@@ -41,16 +41,17 @@
           var IDLote;
           function saidaLote(id, Nome)
           {
-            document.getElementById("NomeLote").innerHTML = "<h3>Fazer retirada do matérial:</h3><h4>" + Nome + "</h4>";
+            document.getElementById("NomeLote").innerHTML = "<h3>Retirando o material:</h3><h4>" + Nome + "</h4>";
             IDLote = id;
           }
           
           var MateriaisELotes = new Array();
           function formataDados(){
             totMat = materiais.length;
+            MateriaisSemLotes = new Array();
             for(m = 0; m < totMat; m++){
-              MatLot = lotes.filter(Lot => Lot.Material.MATE_NAME.toUpperCase().includes(materiais[m].MATE_NAME.toUpperCase()));
-              //if(MatLot.length > 0){
+              MatLot = lotes.filter(Lot => Lot.Material.MATE_NAME.toUpperCase().includes(materiais[m].MATE_NAME.toUpperCase()) && Lot.LOT_QUANTITY > 0);
+              if(MatLot.length > 0){
                 MateriaisELotes.push({
                   MATE_ID: materiais[m].MATE_ID,
                   MATE_NAME: materiais[m].MATE_NAME,
@@ -58,8 +59,18 @@
                   MATE_ACTIVE: materiais[m].MATE_ACTIVE,
                   MATE_LOTS: MatLot
                 });
-              //}
+              }
+              else{
+                MateriaisSemLotes.push({
+                  MATE_ID: materiais[m].MATE_ID,
+                  MATE_NAME: materiais[m].MATE_NAME,
+                  MATE_OBSERVATION: materiais[m].MATE_OBSERVATION,
+                  MATE_ACTIVE: materiais[m].MATE_ACTIVE,
+                  MATE_LOTS: MatLot
+                });
+              }
             }
+            MateriaisELotes = MateriaisELotes.concat(MateriaisSemLotes);
             //console.log(MateriaisELotes);
           }
           
@@ -72,21 +83,30 @@
               Codigo = `<table class="borderless"><thead><tr><th>Material</th><th style='float: right;'>Quantidade Total</th></tr></thead></table><ul class='collapsible expandable listrado'>`
               
               for(c = 0; c < size; c++){
+                totalEstoque = retornaTotalEstoque(Encontrados[c].MATE_LOTS);
                 Codigo += `<li><div class='collapsible-header listradoFilho'>
                             <i class='material-icons'>arrow_drop_down</i>
                             <table class="borderless">
                             <tbody>
-                            <tr><td><span>${Encontrados[c].MATE_NAME}</span></td><td><span style='float: right;'>${retornaTotalEstoque(Encontrados[c].MATE_LOTS)}</span></td></tr>
+                            <tr><td><span>${Encontrados[c].MATE_NAME}</span></td><td><span style='float: right;'>${totalEstoque}</span></td></tr>
                             </tbody>
                             </table>
-                            </div>
-                            <div class='collapsible-body'>
+                            </div>`;
+                if(totalEstoque > 0) {
+                Codigo += `<div class='collapsible-body'>
                               <table class='striped'>
                                 <thead><tr><th>Número do Lote</th><th>Quantidade</th><th>Validade</th></tr></thead>
                                 ${retornaLotesFormatados(Encontrados[c].MATE_NAME, Encontrados[c].MATE_LOTS)}
                               </table>
                             </div>
                           </li>`;
+                }
+              else{
+                Codigo += `<div class='collapsible-body'>
+                              Esse material não possui estoque suficiente.
+                          </div>
+                          </li>`;
+              }
                 //<tr><td><span>${Encontrados[c].MATE_LOTS[0].LOT_ID}</span></td><td><span>${Encontrados[c].MATE_LOTS[0].LOT_QUANTITY}</span></td><td><span>${(Encontrados[c].MATE_LOTS[0].LOT_VALIDITY === null ? ' ' : Encontrados[c].MATE_LOTS[0].LOT_VALIDITY)}</span></td></tr>
               }
               

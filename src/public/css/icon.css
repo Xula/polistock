@@ -57,3 +57,11 @@
 	margin-top:50px;
 	opacity:20%;
 }
+
+.logouvv{
+	position: absolute;
+	height:35px;
+  width:100px;
+  bottom:10%;
+  left:200px;
+}

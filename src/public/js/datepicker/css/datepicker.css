@@ -1,0 +1,187 @@
+/*!
+ * Datepicker for Bootstrap
+ *
+ * Copyright 2012 Stefan Petre
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+.seletorDeData {
+  top: 0;
+  left: 0;
+  padding: 4px;
+  margin-top: 1px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  width: 350px;
+  position: absolute;
+  background: rgb(255, 255, 255);
+  border: 1px solid rgb(204, 204, 204);
+  display: none;
+  /*.dow {
+    border-top: 1px solid #ddd !important;
+  }*/
+
+}
+.seletorDeData:before {
+  content: '';
+  display: inline-block;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid #ccc;
+  border-bottom-color: rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: -7px;
+  left: 6px;
+}
+.seletorDeData:after {
+  content: '';
+  display: inline-block;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #ffffff;
+  position: absolute;
+  top: -6px;
+  left: 7px;
+}
+.seletorDeData > div {
+  display: none;
+}
+.seletorDeData table {
+  width: 100%;
+  margin: 0;
+}
+.seletorDeData td,
+.seletorDeData th {
+  text-align: center;
+  width: 20px;
+  height: 20px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+.seletorDeData td.day:hover {
+  background: #eeeeee;
+  cursor: pointer;
+}
+.seletorDeData td.day.disabled {
+  color: #eeeeee;
+}
+.seletorDeData td.old,
+.seletorDeData td.new {
+  color: #999999;
+}
+.seletorDeData td.active,
+.seletorDeData td.active:hover {
+  color: #ffffff;
+  background-color: #006dcc;
+  background-image: -moz-linear-gradient(top, #8e24aa, #241663);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8e24aa), to(#241663));
+  background-image: -webkit-linear-gradient(top, #8e24aa, #241663);
+  background-image: -o-linear-gradient(top, #8e24aa, #241663);
+  background-image: linear-gradient(to bottom, #8e24aa, #241663);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8e24aa', endColorstr='#ff7424aa', GradientType=0);
+  border-color: #241663 #241663 #002a80;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #241663;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.seletorDeData td.active:hover,
+.seletorDeData td.active:hover:hover,
+.seletorDeData td.active:focus,
+.seletorDeData td.active:hover:focus,
+.seletorDeData td.active:active,
+.seletorDeData td.active:hover:active,
+.seletorDeData td.active.active,
+.seletorDeData td.active:hover.active,
+.seletorDeData td.active.disabled,
+.seletorDeData td.active:hover.disabled,
+.seletorDeData td.active[disabled],
+.seletorDeData td.active:hover[disabled] {
+  color: #ffffff;
+  background-color: #7424aa;
+  *background-color: #003bb3;
+}
+.seletorDeData td.active:active,
+.seletorDeData td.active:hover:active,
+.seletorDeData td.active.active,
+.seletorDeData td.active:hover.active {
+  background-color: #003399 \9;
+}
+.seletorDeData td span {
+  display: block;
+  width: 47px;
+  height: 54px;
+  line-height: 54px;
+  float: left;
+  margin: 2px;
+  cursor: pointer;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+.seletorDeData td span:hover {
+  background: #eeeeee;
+}
+.seletorDeData td span.active {
+  color: #ffffff;
+  background-color: #006dcc;
+  background-image: -moz-linear-gradient(top, #8e24aa, #241663);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8e24aa), to(#241663));
+  background-image: -webkit-linear-gradient(top, #8e24aa, #241663);
+  background-image: -o-linear-gradient(top, #8e24aa, #241663);
+  background-image: linear-gradient(to bottom, #8e24aa, #241663);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8e24aa', endColorstr='#ff7424aa', GradientType=0);
+  border-color: #241663 #241663 #002a80;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #241663;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.seletorDeData td span.active:hover,
+.seletorDeData td span.active:focus,
+.seletorDeData td span.active:active,
+.seletorDeData td span.active.active,
+.seletorDeData td span.active.disabled,
+.seletorDeData td span.active[disabled] {
+  color: #ffffff;
+  background-color: #241663;
+  *background-color: #003bb3;
+}
+.seletorDeData td span.active:active,
+.seletorDeData td span.active.active {
+  background-color: #003399 \9;
+}
+.seletorDeData td span.old {
+  color: #999999;
+}
+.seletorDeData th.switch {
+  width: 145px;
+}
+.seletorDeData th.next,
+.seletorDeData th.prev {
+  font-size: 21px;
+}
+.seletorDeData thead tr:first-child th {
+  cursor: pointer;
+}
+.seletorDeData thead tr:first-child th:hover {
+  background: #eeeeee;
+}
+.input-append.date .add-on i,
+.input-prepend.date .add-on i {
+  display: block;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}

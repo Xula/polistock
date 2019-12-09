@@ -1,4 +1,6 @@
 import Material from '../models/Material';
+import Sequelize from 'sequelize';
+import databaseConfig from '../../config/database';
 
 class MaterialController {
   async index(req, res) {
@@ -82,6 +84,8 @@ class MaterialController {
 
     return res.json(response);
   }
+  
+
 }
 
 export default new MaterialController();

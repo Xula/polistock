@@ -19,91 +19,112 @@ routes.get('/', (req, res) => {
   res.render(__dirname + '/public/html/Login.ejs');
 });
 
-routes.get('/PainelAdmin', SessionController.guard, (req, res) => {
-  res.render('layouts/LayoutAdmin', 
+function LayoutUsuario(req)
+{
+    if(!req.session.usuario || req.session.usuario.tipo == 1)
+    {
+      return 'layouts/LayoutAdmin';
+    }
+    else
+    {
+      return 'layouts/LayoutSecret';
+    }  
+}
+
+routes.get('/RelatorioAVencer', SessionController.guard, (req, res) => {
+  res.render(LayoutUsuario(req), 
         {
-            title: 'Polistock - Admin',
-            pagetitle: 'Painel',
-            body: '',
+            title: 'Polistock - À Vencer',
+            pagetitle: 'Demonstrativo de Materiais à Vencer',
+            notificacoes: JSON.stringify(req.session.loteAviso),
+            body: ejs.render(fs.readFileSync(__dirname + '/public/html/RelatorioMateriaisVencer.ejs', 'utf8')),
             usuario: req.session.usuario ? req.session.usuario.nome : 'Usuário'
         });
 });
 
-routes.get('/PainelSecret', SessionController.guard, (req, res) => {
-  res.render('layouts/LayoutSecret', 
+routes.get('/CadastrarConta', SessionController.guard, (req, res) => {
+  res.render(LayoutUsuario(req), 
         {
-            title: 'Polistock - Secret',
-            pagetitle: 'Painel',
-            body: '',
+            title: 'Polistock - Cadastrar Conta',
+            pagetitle: 'Cadastrar Conta',
+            notificacoes: JSON.stringify(req.session.loteAviso),
+            body: ejs.render(fs.readFileSync(__dirname + '/public/html/Cadastrar.ejs', 'utf8')),
             usuario: req.session.usuario ? req.session.usuario.nome : 'Usuário'
         });
 });
 
 routes.get('/ListarMateriais', SessionController.guard, (req, res) => {
-  res.render('layouts/LayoutAdmin', 
+  res.render(LayoutUsuario(req), 
         {
             title: 'Polistock - Materiais',
-            pagetitle: 'Cadastrar Materiais',
+            pagetitle: 'Gernciamento de Materiais',
+            notificacoes: JSON.stringify(req.session.loteAviso),
             body: ejs.render(fs.readFileSync(__dirname + '/public/html/Materiais.ejs', 'utf8')),
             usuario: req.session.usuario ? req.session.usuario.nome : 'Usuário'
         });
 });
 
 routes.get('/ListarLotes', SessionController.guard, (req, res) => {
-  res.render('layouts/LayoutAdmin', 
+  res.render(LayoutUsuario(req), 
         {
             title: 'Polistock - Lotes',
-            pagetitle: 'Lotes',
+            pagetitle: 'Entrada de Lotes',
+            notificacoes: JSON.stringify(req.session.loteAviso),
             body: ejs.render(fs.readFileSync(__dirname + '/public/html/Lotes.ejs', 'utf8')),
             usuario: req.session.usuario ? req.session.usuario.nome : 'Usuário'
         });
 });
 
 routes.get('/SaidaMateriais', SessionController.guard, (req, res) => {
-  res.render('layouts/LayoutAdmin', 
+  res.render(LayoutUsuario(req), 
         {
             title: 'Polistock - Saída de Materiais',
             pagetitle: 'Saída de Materiais',
+            notificacoes: JSON.stringify(req.session.loteAviso),
             body: ejs.render(fs.readFileSync(__dirname + '/public/html/SaidaMateriais.ejs', 'utf8')),
             usuario: req.session.usuario ? req.session.usuario.nome : 'Usuário'
         });
 });
 
 routes.get('/RelatorioMediasConsumo', SessionController.guard, (req, res) => {
-  res.render('layouts/LayoutAdmin', 
+  res.render(LayoutUsuario(req), 
         {
             title: 'Polistock - Relatório: Médias de Consumo de Materiais',
             pagetitle: 'Relatório: Médias de Consumo de Materiais',
+            notificacoes: JSON.stringify(req.session.loteAviso),
             body: ejs.render(fs.readFileSync(__dirname + '/public/html/RelatorioMediasConsumo.ejs', 'utf8')),
             usuario: req.session.usuario ? req.session.usuario.nome : 'Usuário'
         });
 });
 
 routes.get('/RelatorioMateriaisVencer', SessionController.guard, (req, res) => {
-  res.render('layouts/LayoutAdmin', 
+  res.render(LayoutUsuario(req), 
         {
             title: 'Polistock - Relatório: Materiais a vencer',
-            pagetitle: 'Relatório: Relatório: Materiais a vencer',
+            pagetitle: 'Relatório: Materiais a vencer',
+            notificacoes: JSON.stringify(req.session.loteAviso),
             body: ejs.render(fs.readFileSync(__dirname + '/public/html/RelatorioMateriaisVencer.ejs', 'utf8')),
             usuario: req.session.usuario ? req.session.usuario.nome : 'Usuário'
         });
 });
 
 routes.get('/RelatorioEntradaMateriais', SessionController.guard, (req, res) => {
-  res.render('layouts/LayoutAdmin', 
+  res.render(LayoutUsuario(req), 
         {
             title: 'Polistock - Relatório: Entrada de Materiais',
             pagetitle: 'Relatório: Entrada de Materiais',
+            notificacoes: JSON.stringify(req.session.loteAviso),
             body: ejs.render(fs.readFileSync(__dirname + '/public/html/RelatorioEntradaMateriais.ejs', 'utf8')),
             usuario: req.session.usuario ? req.session.usuario.nome : 'Usuário'
         });
 });
 
 routes.get('/RelatorioSaidaMateriais', SessionController.guard, (req, res) => {
-  res.render('layouts/LayoutAdmin', 
+  res.render(LayoutUsuario(req), 
         {
             title: 'Polistock - Relatório: Saída de Materiais',
             pagetitle: 'Relatório: Saída de Materiais',
+            notificacoes: JSON.stringify(req.session.loteAviso),
             body: ejs.render(fs.readFileSync(__dirname + '/public/html/RelatorioSaidaMateriais.ejs', 'utf8')),
             usuario: req.session.usuario ? req.session.usuario.nome : 'Usuário'
         });
@@ -178,18 +199,28 @@ routes.post('/Retirar', async (req, res) => {
       .catch(error => {
         //res.json({ sucess: false, res: 'Ocorreu algum erro ao cadastrar a movimentação' });
         return res.render('layouts/LayoutDialog', {
-            title: 'Ocorreu algum erro ao cadastrar a movimentação.',
-            type: 0,
-            resposta: error,
-          });
+          title: 'Ocorreu algum erro ao cadastrar a movimentação.',
+          type: 0,
+          resposta: error,
+        });
       })
     })
     .catch(error => {
-      res.json({ success: false, res: 'Ocorreu algum erro ao retirar do lote' });
+      //res.json({ success: false, res: 'Ocorreu algum erro ao retirar do lote' });
+      return res.render('layouts/LayoutDialog', {
+        title: 'Ocorreu algum erro ao retirar do lote.',
+        type: 0,
+        resposta: error,
+      });
     });
   }
   else{
-    res.json({ success: false, res: 'Não é possível retirar esta quantidade!' });
+    //res.json({ success: false, res: 'Não é possível retirar esta quantidade!' });
+    return res.render('layouts/LayoutDialog', {
+      title: 'Não é possível retirar esta quantidade!',
+      type: 0,
+      resposta: '',
+    });
   }
 });
 
@@ -208,11 +239,11 @@ routes.get('/lots', LotController.index);
 routes.post('/lots', LotController.store);
 routes.put('/lots', LotController.update);
 routes.delete('/lots', LotController.destroy);
+routes.post('/relatorioDataVencer', LotController.relatorioDataVencer);
 
 routes.get('/movements', MovementController.index);
-routes.get('/mediasConsumo', MovementController.mediasConsumo);
+routes.post('/mediasConsumo', MovementController.mediasConsumo);
 routes.post('/relatorioEntrada', MovementController.relatorioEntrada);
-routes.post('/relatorioDataVencer', MovementController.relatorioDataVencer);
 routes.post('/relatorioSaida', MovementController.relatorioSaida);
 routes.post('/movements', MovementController.store);
 routes.put('/movements', MovementController.update);

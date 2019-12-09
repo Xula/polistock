@@ -1,6 +1,8 @@
 import Lot from '../models/Lot';
 import Material from '../models/Material';
 import Movement from '../models/Movement';
+import Sequelize from 'sequelize';
+import databaseConfig from '../../config/database';
 
 class LotController {
   async index(req, res) {
@@ -26,8 +28,9 @@ class LotController {
       .then(async response => {
         // console.log('sessao', req.session.usuario);
         // console.log('inserção do lote:', response.dataValues);
-      
+
         // cria o registro do movimento daquele novo lote que foi inserido
+
         await Movement.create({
           MOVE_DATE: new Date(),
           MOVE_TYPE: 2,
@@ -79,6 +82,16 @@ class LotController {
     const response = await lotExists.destroy();
 
     return res.json(response);
+  }
+
+  async relatorioDataVencer(req, res) {
+    console.log(req.body.inicio);
+    const conn = new Sequelize(databaseConfig);
+    const response = await conn.query(`select "MATE_NAME", "LOT_QUANTITY", "LOT_VALIDITY", "LOT_ID" from "LOT" as l inner join "MATERIAL" as m 
+        on l."MATE_ID"=m."MATE_ID" where "LOT_VALIDITY" between '${new Date().toLocaleDateString().split('/').reverse().join('-')}' and '${req.body.inicio}' and l."LOT_QUANTITY" > 0`
+    );
+    // console.log('a vencer: ', response);
+    return res.json(response[0]);
   }
 }
 

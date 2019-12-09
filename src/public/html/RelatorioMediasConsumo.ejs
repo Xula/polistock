@@ -1,70 +1,173 @@
 <div class="container">
-    <div class="row" id="conteudo">
-        <div class="row valign-wrapper">
-            <div class="col s12">
-                <form>
-                    <div class="input-field">
-                        <i class="material-icons prefix">search</i>
-                        <input id="search" onkeyup="Buscando()" type="text" placeholder="Buscar...">
-                    </div>
-                </form>
-            </div>            
-        </div>
-        <div class="row">
-            <div class="col s2 offset-s10">
-                <a class="waves-effect waves-light btn" id="botaoExportar" onClick="exportarRelatorio()">Exportar</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col s12">
-                <table class="striped" id="tabela">
-                    <thead>
-                        <tr>
-                            <th>Material</th>
-                            <th class="center-align">Média</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                      <tr>
-                        <td>Material 1</td>
-                        <td class="center-align">3</td>
-                      </tr>
-                      <tr>
-                        <td>Material 2</td>
-                        <td class="center-align">3</td>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>            
-        </div>
+    <div class="row">
+      <div class="input-field col s2">
+        <i class="material-icons prefix">date_range</i>
+        <input class="validate seletoresDeDatas" id="dataInicial" data-date="02-2012" data-date-format="mm-yyyy" placeholder="Data Inicial" autocomplete="off">
+      </div>
+      
+      <div class="input-field col s2">
+        <i class="material-icons prefix">date_range</i>
+        <input class="validate seletoresDeDatas" id="dataFinal" data-date-format="mm-yyyy" placeholder="Data Final" autocomplete="off">
+      </div>
+      
+      <div>
+          <div class="input-field col s2">
+              <a class="waves-effect waves-light btn" id="botaoGerar" disabled>Gerar</a>
+          </div>
+      </div>
     </div>
+  
+    <div class="row" id="conteudo"></div>
     
     <script>
+      var dataInicial = '';
+      var dataFinal = '';
+      var infoReport = new Array();
+      
         $(document).ready(function(){
-          $.get('mediasConsumo', (data) => {
-            if (data.length === 0) {
-              const conteudo = '<h4>Não há dados para exibir.</h4>';
-              $('#conteudo').html(conteudo);
-            } else {
-              //preencher tabela
-            }
+          
+          
+          $("#dataInicial").seletorDeData({
+              format: "mm/yyyy",
+              viewMode: "months",
+              minViewMode: "months",
+              autoclose: true,
+          }).on('changeDate', (e) => {
+            setTimeout(() => { 
+              dataInicial = $('#dataInicial').val();
+              if (dataInicial != '' && dataFinal != '') {
+                $('#botaoGerar').attr('disabled', false);
+              }
+            }, 50);
+            
           });
+          
+          $("#dataFinal").seletorDeData({
+              format: "mm/yyyy",
+              viewMode: "months",
+              minViewMode: "months",
+              autoclose: true,
+          }).on('changeDate', (e) => {
+            setTimeout(() => { 
+              dataFinal = $('#dataFinal').val();
+              if (dataInicial != '' && dataFinal != '') {
+                $('#botaoGerar').attr('disabled', false);
+              }
+            }, 50);
+          });
+          
         });
       
-      function exportarRelatorio() {
-        //exportar relatório
-        let doc = new jsPDF('p', 'pt');
-        const elem = document.getElementById("tabela");
-        const res = doc.autoTableHtmlToJson(elem);
-        const texto = "Médias de Consumo";
-        doc.text(20, 20, texto);
-        doc.autoTable(res.columns, res.data, {
-          styles: {
-            halign: 'center'
-          }
+      const conteudoTabela = `<div class="row valign-wrapper">
+                                  <div class="col s12">
+                                  </div>            
+                                </div>
+                                <div class="row">
+                                  <div class="col s2 offset-s10">
+                                    <a class="waves-effect waves-light btn" id="botaoExportar" onClick="exportCsvFile()">Exportar</a>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                    <table class="striped" id="tabela">
+                                        <thead>
+                                            <tr>
+                                                <th>Material</th>
+                                                <th class="center-align">Quantidade em estoque</th>
+                                                <th class="center-align">Media de Consumo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="table">
+                                            
+
+                                        </tbody>
+                                    </table>
+                                </div>`;
+      const conteudoMsg = '<h4>Não há dados para exibir.</h4>';
+      
+      $('#botaoGerar').on('click', () => {
+        
+          
+          let dataInicio = $('#dataInicial').val().split('/').reverse().join('-') + '-01';
+          let dataFim = $('#dataFinal').val().split('/').reverse().join('-') + '-' + UltimoDia(parseInt($('#dataFinal').val().split('/')[1]), parseInt($('#dataFinal').val().split('/')[0]));
+          dataInicialGlobal = $('#dataInicial').val();
+          dataFinalGlobal = $('#dataFinal').val();
+          // console.log(dataInicio, dataFim);
+        
+        infoReport = [];
+        
+          $.ajax({
+            url: "mediasConsumo",
+            type : 'POST',
+            data : JSON.stringify({ inicio: dataInicio, fim: dataFim }),
+            contentType: 'application/json',
+            success: res => {
+              // console.log(res, 'suc');
+              
+              $('#conteudo').html(conteudoTabela);
+              var rows = '';
+              if(res.length == 0)
+                $('#conteudo').html(conteudoMsg);
+              else{
+                infoReport.push(["Material", "Total em Estoque", "Média de Consumo"]);
+                res.forEach(mov => {
+                  
+                  infoReport.push([mov.MATE_NAME, mov.totallotes, parseFloat(mov.mediaConsumo).toFixed(2)]);
+                  
+                  let dado = `<tr>
+                                <td>${mov.MATE_NAME}</td>
+                                <td class="center-align">${mov.totallotes}</td>
+                                <td class="center-align">${ parseFloat(mov.mediaConsumo).toFixed(2) }</td>
+                              </tr>`;
+                  rows += dado;
+                })
+                $('#table').html(rows);
+              }
+            },
+            error: (err) => {
+              // console.log(err.res, 'err');
+              $('#conteudo').html(conteudoMsg);
+            }
+            });
         });
-        doc.save("Relatorio_Médias_de_Consumo.pdf");
+      
+      // retorna a ultima data possivel de um mes, incluindo se um ano for bissexto
+      function UltimoDia(year, month){
+        var d = new Date(year, month, 0);
+        var lastdate = d.getDate();
+        return lastdate;
       }
+      
+    function exportCsvFile() {
+      prefixNameFile = "Relatório_Médias_de_Consumo_"+dataInicial+"-A-"+dataFinal;
+      data = infoReport;
+      headerText = ["Material", "Total em Estoque", "Média de Consumo"];
+      let csv = '';//= data.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(';').replace(/\<br\/\>/g, ' '));
+      console.log(data);
+      data.forEach(function(rowArray) {
+        let row = rowArray.join(";");
+        csv += row + "\r\n";
+      });
+      console.log(csv);
+      const csvArray = csv;
+      const uint8 = new Uint8Array(csvArray.length);
+      for (let i = 0; i < uint8.length; i++) {
+        uint8[i] = csvArray.charCodeAt(i);
+      }
+      const a = document.createElement('a');
+      const blob = new Blob([uint8], { type: 'text/csv;charset=ANSI' }),
+          url = window.URL.createObjectURL(blob);
+
+      const dt = new Date();
+      const dt_dia = ('0' + dt.getDate()).slice(-2);
+      const dt_mes = ('0' + (dt.getMonth() + 1)).slice(-2);
+      const dt_ano = dt.getFullYear();
+      const hr = ('0' + dt.getHours()).slice(-2);
+      const min = ('0' + dt.getMinutes()).slice(-2);
+      a.href = url;
+      a.download = `${prefixNameFile}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+    }
     </script>
 </div>
